@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：数据层接口的全限定名-->
+<mapper namespace="com.example.demo.dao.NavMapper">
+
+    <resultMap id="getNavResultMap" type="com.example.demo.po.Nav">
+        <id column="cid" property="cid"></id>
+        <result column="cname" property="name"></result>
+        <collection property="brands" ofType="brand">
+            <id column="bid" property="bid"/>
+            <result column="bname" property="name"/>
+        </collection>
+    </resultMap>
+    <!--id:数据层接口中的方法名-->
+    <select id="getNav" resultMap="getNavResultMap">
+        SELECT DISTINCT category.cid,category.name cname,brand.bid,brand.name bname FROM category,brand,product
+WHERE category.cid = product.cid AND brand.bid = product.bid
+    </select>
+</mapper>

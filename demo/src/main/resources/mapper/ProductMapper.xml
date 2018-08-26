@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace：数据层接口的全限定名-->
+<mapper namespace="com.example.demo.dao.ProductMapper">
+
+    <resultMap id="productResultMap" type="product">
+        <id property="pid" column="pid"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="originalPrice" column="original_price"/>
+        <result property="price" column="price"/>
+        <result property="imgUrl" column="img_url"/>
+        <result property="inventory" column="inventory"/>
+        <result property="salesVolume" column="sales_volume"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <association property="brand" javaType="brand">
+            <id property="bid" column="bid"/>
+            <result property="name" column="bname"/>
+        </association>
+        <association property="categroy" javaType="categroy">
+            <id property="cid" column="cid"/>
+            <result property="name" column="cname"/>
+        </association>
+    </resultMap>
+
+    <select id="query" resultMap="productResultMap" parameterType="map">
+        SELECT
+        category.cid,
+        category.name cname,
+        brand.bid,
+        brand.name bname,
+        product.*
+        FROM product,category,brand
+        WHERE category.cid = product.cid
+        AND brand.bid = product.bid
+        <if test="cid != null">
+            AND product.cid = #{cid}
+        </if>
+        <if test="bid != null">
+            AND product.bid = #{bid}
+        </if>
+        <if test="keyWord != null">
+            AND product.name LIKE CONCAT('%',#{keyWord},'%')
+        </if>
+    </select>
+    <select id="queryByPid" parameterType="int" resultMap="productResultMap">
+        SELECT
+          category.cid,
+          category.name cname,
+          brand.bid,
+          brand.name bname,
+          product.*
+        FROM product,category,brand
+        WHERE category.cid = product.cid
+              AND brand.bid = product.bid
+              AND pid = #{pid}
+    </select>
+
+    <update id="doUpdate" parameterType="map">
+      UPDATE product SET sales_volume = sales_volume + #{quantity} ,inventory = inventory - #{quantity} WHERE pid = #{pid}
+    </update>
+</mapper>
